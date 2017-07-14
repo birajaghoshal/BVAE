@@ -44,7 +44,7 @@ n_z_samps = 50
 
 x_size = 2   #f_height=28f_width=28
 z_size = 2
-epochs = 100000 / (n_samps/5)
+epochs = 1000000 / (n_samps/5)
 n_batch = 5
 display_step = epochs / 4 # / 25
 lr = .001
@@ -87,7 +87,7 @@ hyperparams = {
     'qW_weight': qW_weight,
     'pW_weight': pW_weight,
     'lmba': lmba,
-    'logprob_type': 2 #ignores n_W
+    'logprob_type': 2 #ignores multiple n_W
     }
 
 
@@ -110,12 +110,12 @@ model = BVAE(hyperparams)
 values, labels, valid_values, valid_labels = model.train2(train_x=samps, valid_x=[],
             epochs=epochs, batch_size=n_batch,
             display_step=display_step,
-            # path_to_load_variables='',
-            path_to_load_variables=param_file,
+            path_to_load_variables='',
+            # path_to_load_variables=param_file,
             path_to_save_variables=param_file)
 
 
-
+fafafds
 
 
 
