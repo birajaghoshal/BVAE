@@ -22,6 +22,8 @@ from utils import split_mean_logvar
 from NN import NN
 from BNN import BNN
 from BNN_MNF import MNF
+from BNN_sparse import BNN as BNN_sparse
+
 
 from sample_z import Sample_z
 
@@ -46,6 +48,8 @@ class BVAE(object):
         self.qW_weight = hyperparams['qW_weight']
         self.pW_weight = hyperparams['pW_weight']
         self.lmba = hyperparams['lmba']
+
+        self.scale_log_probs = hyperparams['scale_log_probs']
 
         self.likelihood = hyperparams['likelihood_distribution']
 
@@ -74,15 +78,13 @@ class BVAE(object):
                     else:
                         n_decoder_weights += (gen_hidden_layers[i-1]+1) * gen_hidden_layers[i] 
             print 'n_decoder_weights', n_decoder_weights
-            self.encoder_net = [self.x_size + n_decoder_weights] + rec_hidden_layers +[self.z_size*2]
+
+            self.encoder_net2 = [n_decoder_weights] + rec_hidden_layers + [self.z_size]
+            self.encoder_net = [self.x_size + self.z_size] + rec_hidden_layers + [self.z_size*2]
 
         self.encoder_act_func = tf.nn.elu #tf.nn.softplus #tf.tanh
 
-        # if self.likelihood == 'Bernoulli':
-        #     self.decoder_net = [self.z_size] + gen_hidden_layers + [self.x_size]
-        # elif self.likelihood == 'Gaussian':
         self.decoder_net = [self.z_size] + gen_hidden_layers + [decoder_output_size]
-
         self.decoder_act_func = tf.tanh
 
 
@@ -99,7 +101,13 @@ class BVAE(object):
 
         #Define model
         with tf.variable_scope("encoder"):
-            encoder = NN(self.encoder_net, self.encoder_act_func, self.batch_size)
+            encoder = NN(self.encoder_net, self.encoder_act_func)
+
+        with tf.variable_scope("encoder2"):
+            if hyperparams['ga'] == 'hypo_net':
+                encoder2 = NN(self.encoder_net2, self.encoder_act_func)
+            else:
+                encoder2 = 'None'
 
         with tf.variable_scope("encoder_weight_decay"):
             self.l2_sum = encoder.weight_decay()
@@ -109,10 +117,11 @@ class BVAE(object):
                 decoder = BNN(self.decoder_net, self.decoder_act_func)
             elif hyperparams['decoder'] == 'MNF':
                 decoder = MNF(self.decoder_net, self.decoder_act_func)
-
+            elif hyperparams['decoder'] == 'BNN_sparse':
+                decoder = BNN_sparse(self.decoder_net, self.decoder_act_func)
 
         with tf.variable_scope("sample_z"):
-            sample_z = Sample_z(self.batch_size, self.z_size, self.n_z_particles, hyperparams['ga'], n_transformations)
+            sample_z = Sample_z(self.batch_size, self.z_size, self.n_z_particles, hyperparams['ga'], n_transformations, encoder2)
 
         with tf.variable_scope("log_probs"):
             if hyperparams['logprob_type'] == 1:
@@ -137,8 +146,9 @@ class BVAE(object):
 
         # for var in tf.global_variables():
         #     print var
-        self.decoder_means = decoder.W_means
-        self.decoder_logvars = decoder.W_logvars
+
+        # self.decoder_means = decoder.W_means
+        # self.decoder_logvars = decoder.W_logvars
 
         # with tf.variable_scope("is_it_this"):
         #     self.recons, self.priors = self.get_x_samples(self.x, encoder, decoder, sample_z)
@@ -233,7 +243,7 @@ class BVAE(object):
         #no loop over W samples
 
         # Sample decoder weights  __, [1], [1]
-        W, log_pW, log_qW = decoder.sample_weights()
+        W, log_pW, log_qW = decoder.sample_weights(self.scale_log_probs)
 
         # Sample z   [P,B,Z], [P,B], [P,B]
         z, log_pz, log_qz = sample_z.sample_z(x, encoder, decoder, W)
@@ -258,7 +268,12 @@ class BVAE(object):
         log_qz = tf.reshape(log_qz, [1, self.n_z_particles, self.batch_size])
         log_px = tf.reshape(self.log_px_, [1, self.n_z_particles, self.batch_size])
 
-        return [log_px, log_pz, log_qz, log_pW, log_qW]  
+        if self.scale_log_probs:
+            return [log_px/self.x_size, log_pz/self.z_size, log_qz/self.z_size, log_pW, log_qW] 
+        else: 
+            return [log_px, log_pz, log_qz, log_pW, log_qW] 
+        # return [log_px-tf.log(tf.cast(self.x_size, tf.float32)), log_pz-tf.log(tf.cast(self.z_size, tf.float32)), log_qz-tf.log(tf.cast(self.z_size, tf.float32)), log_pW, log_qW]  
+
 
 
     def objective(self, log_px, log_pz, log_qz, log_pW, log_qW):
@@ -497,6 +512,27 @@ class BVAE(object):
         return means, logvars
 
 
+
+    def decoder_entropy(self):
+
+        nx = ny = 5
+        x_values = np.linspace(-3, 3, nx)
+        y_values = np.linspace(-3, 3, ny)
+
+        n = 100
+
+        # for i, yi in enumerate(x_values):
+        #     # print i
+        #     for j, xi in enumerate(y_values):
+        #         z_mu = np.array([[xi, yi]])
+
+        #         log_qW = self.sess.run((self.log_qW)), feed_dict={self.z: z_mu})
+
+        log_qWs = []
+        for i in range(n):
+            log_qWs.append(self.sess.run((self.log_qW)))
+
+        return -np.mean(log_qWs)
 
 
 

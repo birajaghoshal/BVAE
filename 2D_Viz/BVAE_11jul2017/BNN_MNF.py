@@ -132,7 +132,7 @@ class MNF(object):
 
 
 
-    def sample_weights(self):
+    def sample_weights(self, scale_log_probs):
 
         Ws = []
         zs = []
@@ -141,6 +141,9 @@ class MNF(object):
         log_q_W_sum = 0
         log_q_z_sum = 0
         log_r_z_sum = 0
+
+        W_dim_count = 0.
+        z_dim_count = 0.
 
         for layer_i in range(len(self.net)-1):
 
@@ -213,6 +216,9 @@ class MNF(object):
             log_p_W_sum += log_normal3(flat_w, tf.zeros([input_size_i*output_size_i]), tf.log(tf.ones([input_size_i*output_size_i])))
             log_q_W_sum += log_normal3(flat_w, flat_W_means, flat_W_logvars)
 
+            W_dim_count += tf.cast(tf.shape(flat_w)[0], tf.float32)
+            z_dim_count += tf.cast(tf.shape(z)[0], tf.float32)
+
             Ws.append(W)
             zs.append(zT)
 
@@ -221,7 +227,13 @@ class MNF(object):
         log_q_W_sum = log_q_W_sum + log_q_z_sum
 
 
-        return Ws, log_p_W_sum, log_q_W_sum
+        
+        
+        if scale_log_probs:
+            return Ws, log_p_W_sum/(W_dim_count+z_dim_count), log_q_W_sum/(W_dim_count+z_dim_count)
+        else:
+            return Ws, log_p_W_sum, log_q_W_sum
+
 
 
 

@@ -93,6 +93,8 @@ def plot_isocontours_mog(ax, gaus_class, means, logvars, xlimits=[-6, 6], ylimit
     X, Y = np.meshgrid(x, y)
     zs = func(np.concatenate([np.atleast_2d(X.ravel()), np.atleast_2d(Y.ravel())]).T)
     Z = zs.reshape(X.shape)
+    if np.sum(Z) == 0:
+        Z[0][0] = .00001
     plt.contour(X, Y, Z, cmap=cmap, alpha=alpha)
     ax.set_yticks([])
     ax.set_xticks([])

@@ -2,7 +2,7 @@
 import tensorflow as tf
 import math
 
-
+import numpy as np
 
 
 
@@ -237,6 +237,69 @@ class G_class2(object):
         # with tf.Session() as sess:
 
         return self.sess.run(self.sampled_x)
+
+
+
+
+
+
+
+
+
+
+class MoG_class(object):
+
+    # def __init__(self, means, logvars, weights):
+    def __init__(self, gaussians, weights):
+
+
+        # tf.reset_default_graph()
+
+        # self.mean = [-4., 4.]
+        # self.mean = mean
+
+        # self.logvar = logvar
+        self.gaussians = gaussians
+        self.weights = weights
+
+        # self.x = tf.placeholder(tf.float32, [None, 2])
+        # self.logp = log_normal(self.x, self.mean, self.logvar)
+
+        # self.sampled_x = sample_Gaussian(self.mean, self.logvar)
+
+
+        # tf.get_default_graph().finalize()
+
+        # self.sess = tf.Session()
+
+
+
+
+    def run_log_post(self, x):
+
+        # with tf.Session() as sess:
+        p_x = np.zeros((len(x)))
+
+        for i in range(len(self.gaussians)):
+
+            p_x += self.weights[i] * np.exp(self.gaussians[i].run_log_post(x))
+
+        p_x = np.maximum(p_x, np.exp(np.ones((len(x)))*-40.))
+
+        return np.log(p_x)
+
+
+
+
+    def run_sample_post(self, rs):
+
+        # with tf.Session() as sess:
+
+        # gaus = np.argmax(np.random.multinomial(1, self.weights))
+        gaus = np.argmax(rs.multinomial(1, self.weights))
+
+
+        return self.gaussians[gaus].run_sample_post()
 
 
 

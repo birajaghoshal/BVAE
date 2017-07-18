@@ -64,12 +64,16 @@ class BNN(object):
 
 
 
-    def sample_weights(self):
+    def sample_weights(self, scale_log_probs):
 
         Ws = []
 
         log_p_W_sum = 0
         log_q_W_sum = 0
+
+
+        W_dim_count = 0.
+
 
         for layer_i in range(len(self.net)-1):
 
@@ -97,11 +101,18 @@ class BNN(object):
 
             # print W
 
+            W_dim_count += tf.cast(tf.shape(flat_w)[0], tf.float32)
+
             Ws.append(W)
 
         # afsasd
 
-        return Ws, log_p_W_sum, log_q_W_sum
+        # return Ws, log_p_W_sum, log_q_W_sum
+
+        if scale_log_probs:
+            return Ws, (log_p_W_sum)/(W_dim_count), (log_q_W_sum)/(W_dim_count)
+        else:
+            return Ws, (log_p_W_sum), (log_q_W_sum)
 
 
 

@@ -8,14 +8,14 @@ import numpy as np
 
 class NN(object):
 
-    def __init__(self, network_architecture, act_func, batch_size):
+    def __init__(self, network_architecture, act_func):
         
         #Model hyperparameters
         self.act_func = act_func
         self.input_size = network_architecture[0]
         self.output_size = network_architecture[-1]
         self.net = network_architecture
-        self.batch_size = batch_size
+        # self.batch_size = batch_size
 
         self.Ws = self.init_weights()
 
@@ -67,7 +67,7 @@ class NN(object):
         x: [B,X]
         y_hat: [B,O]
         '''
-
+        B = tf.shape(x)[0]
         net = self.net
 
         #[B,X]
@@ -78,7 +78,7 @@ class NN(object):
             W = self.Ws[layer_i]
 
             #Concat 1 to input for biases  [B,P,X]->[B,P,X+1]
-            cur_val = tf.concat([cur_val,tf.ones([self.batch_size, 1])], axis=1)
+            cur_val = tf.concat([cur_val,tf.ones([B, 1])], axis=1)
 
             if layer_i != len(net)-2:
                 cur_val = self.act_func(tf.matmul(cur_val, W))

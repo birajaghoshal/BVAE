@@ -25,12 +25,13 @@ slim=tf.contrib.slim
 class Sample_z(object):
 
 
-    def __init__(self, batch_size, z_size, n_z_particles, ga, n_transformations=3):
+    def __init__(self, batch_size, z_size, n_z_particles, ga, n_transformations=3, encoder2='None'):
 
         self.batch_size = batch_size
         self.z_size = z_size
         self.n_z_particles = n_z_particles
         self.ga = ga
+        self.encoder2 = encoder2
 
         self.rs = 0
         
@@ -129,7 +130,6 @@ class Sample_z(object):
 
             for i in range(len(W)):
 
-
                 if i ==0:
                     flatten_W = tf.reshape(W[i], [-1])
                     # print flatten_W
@@ -140,11 +140,15 @@ class Sample_z(object):
 
 
             flatten_W = tf.reshape(flatten_W, [1,-1])
-            tiled = tf.tile(flatten_W, [self.batch_size, 1])
+
+
+            #Encode W
+            encoded_W = self.encoder2.feedforward(flatten_W) #[1,Z]
+
+            tiled = tf.tile(encoded_W, [self.batch_size, 1])
             intput_ = tf.concat([x,tiled], axis=1)
 
-
-            #Encode
+            #Encode all
             z_mean_logvar = encoder.feedforward(intput_) #[B,Z*2]
             z_mean = tf.slice(z_mean_logvar, [0,0], [self.batch_size, self.z_size]) #[B,Z] 
             z_logvar = tf.slice(z_mean_logvar, [0,self.z_size], [self.batch_size, self.z_size]) #[B,Z]
