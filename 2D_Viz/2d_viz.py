@@ -9,8 +9,8 @@
 
 import numpy as np
 
-# import matplotlib as mpl
-# mpl.use('Agg')
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 
 from os.path import expanduser
@@ -56,8 +56,8 @@ lmba = 0. #l2 weight on the encoder
 # list_of_decoders = ['BNN', 'MNF']
 # decoder = 'BNN'
 # decoder = 'BNN'
-# ga = 'hypo_net'
-ga = 'none'
+ga = 'hypo_net'
+# ga = 'none'
 # list_of_ga = ['none', 'hypo_net']
 # Test settings
 S_evaluation = 5 #2  
@@ -97,7 +97,7 @@ hyperparams = {
     }
 
 
-param_file = home+'/Documents/tmp/vars_noGA_2.ckpt'
+param_file = home+'/Documents/tmp/vars_GA_2.ckpt'
 # param_file = home+'/Documents/tmp/vars2.ckpt'
 
 
@@ -505,6 +505,10 @@ if fig2:
     # Xi, Yi = np.meshgrid(x_values, y_values)
     # plt.imshow(canvas, origin="upper", cmap="Reds")
     # plt.imshow(canvas, cmap="Reds")
+
+    if np.sum(canvas) == 0:
+        canvas[0][0] = .00001
+
     plt.contour(canvas, cmap='Reds')
 
     # plt.contour(canvas, origin="upper", cmap='Reds')
@@ -529,6 +533,8 @@ if fig2:
     # y = np.linspace(*[-6, 6], num=numticks)
     # X, Y = np.meshgrid(x, y)
     # plt.contour(canvas, origin="upper", cmap='Blues', alpha=.3)
+    if np.sum(canvas) == 0:
+        canvas[0][0] = .00001
     plt.contour(canvas, cmap='Blues', alpha=.3)
 
 
