@@ -10,8 +10,8 @@
 import numpy as np
 
 import matplotlib as mpl
-mpl.use('Agg')
-import matplotlib.pyplot as plt
+# mpl.use('Agg')
+# import matplotlib.pyplot as plt
 
 from os.path import expanduser
 home = expanduser("~")
@@ -121,12 +121,12 @@ print samps.shape
 model = BVAE(hyperparams)
 
 
-values, labels, valid_values, valid_labels = model.train2(train_x=samps, valid_x=[],
-            epochs=epochs, batch_size=n_batch,
-            display_step=display_step,
-            path_to_load_variables='',
-            # path_to_load_variables=param_file,
-            path_to_save_variables=param_file)
+# values, labels, valid_values, valid_labels = model.train2(train_x=samps, valid_x=[],
+#             epochs=epochs, batch_size=n_batch,
+#             display_step=display_step,
+#             path_to_load_variables='',
+#             # path_to_load_variables=param_file,
+#             path_to_save_variables=param_file)
 
 
 
