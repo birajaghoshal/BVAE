@@ -56,8 +56,8 @@ lmba = 0. #l2 weight on the encoder
 # list_of_decoders = ['BNN', 'MNF']
 # decoder = 'BNN'
 # decoder = 'BNN'
-ga = 'hypo_net'
-# ga = 'none'
+# ga = 'hypo_net'
+ga = 'none'
 # list_of_ga = ['none', 'hypo_net']
 # Test settings
 S_evaluation = 5 #2  
@@ -97,7 +97,7 @@ hyperparams = {
     }
 
 
-param_file = home+'/Documents/tmp/vars_GA_2.ckpt'
+param_file = home+'/Documents/tmp/vars_noGA_2.ckpt'
 # param_file = home+'/Documents/tmp/vars2.ckpt'
 
 
@@ -144,7 +144,7 @@ test_results, train_results, test_labels, train_labels = model.eval(data=test_sa
 model.init_params(param_file)
 print 'Decoder entropy', model.decoder_entropy()
 
-
+fasdfa
 
 
 fig1 = 1
@@ -440,7 +440,7 @@ if fig1:
         ######
         #COL 4
         ax = plt.subplot2grid((rows,columns), (p_i,3), frameon=False)#, colspan=3)
-        dist = ttp.G_class()
+        # dist = ttp.G_class()
         plot_isocontours(ax, dist.run_log_post, cmap='Blues')
         if p_i == 0: ax.annotate('VAE p(x) means', xytext=(.4, 1.1), xy=(0, 1), textcoords='axes fraction')
         plot_scatter(ax, means, color='green')
