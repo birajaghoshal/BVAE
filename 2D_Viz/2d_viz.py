@@ -9,9 +9,9 @@
 
 import numpy as np
 
-import matplotlib as mpl
+# import matplotlib as mpl
 # mpl.use('Agg')
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 from os.path import expanduser
 home = expanduser("~")
@@ -38,7 +38,7 @@ file_type = '.png' #'.eps'
 
 
 
-n_samps = 5
+n_samps = 5000
 n_test_samps = 100
 n_z_samps = 50
 
@@ -121,12 +121,12 @@ print samps.shape
 model = BVAE(hyperparams)
 
 
-# values, labels, valid_values, valid_labels = model.train2(train_x=samps, valid_x=[],
-#             epochs=epochs, batch_size=n_batch,
-#             display_step=display_step,
-#             path_to_load_variables='',
-#             # path_to_load_variables=param_file,
-#             path_to_save_variables=param_file)
+values, labels, valid_values, valid_labels = model.train2(train_x=samps, valid_x=[],
+            epochs=epochs, batch_size=n_batch,
+            display_step=display_step,
+            path_to_load_variables='',
+            # path_to_load_variables=param_file,
+            path_to_save_variables=param_file)
 
 
 
