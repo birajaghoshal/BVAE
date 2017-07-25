@@ -38,7 +38,7 @@ file_type = '.png' #'.eps'
 
 
 
-n_samps = 5000
+n_samps = 5
 n_test_samps = 100
 n_z_samps = 50
 
@@ -56,8 +56,8 @@ lmba = 0. #l2 weight on the encoder
 # list_of_decoders = ['BNN', 'MNF']
 # decoder = 'BNN'
 # decoder = 'BNN'
-# ga = 'hypo_net'
-ga = 'none'
+ga = 'hypo_net'
+# ga = 'none'
 # list_of_ga = ['none', 'hypo_net']
 # Test settings
 S_evaluation = 5 #2  
@@ -97,7 +97,7 @@ hyperparams = {
     }
 
 
-param_file = home+'/Documents/tmp/vars_noGA_2.ckpt'
+param_file = home+'/Documents/tmp/vars_GA_2.ckpt'
 # param_file = home+'/Documents/tmp/vars2.ckpt'
 
 
@@ -121,12 +121,12 @@ print samps.shape
 model = BVAE(hyperparams)
 
 
-values, labels, valid_values, valid_labels = model.train2(train_x=samps, valid_x=[],
-            epochs=epochs, batch_size=n_batch,
-            display_step=display_step,
-            path_to_load_variables='',
-            # path_to_load_variables=param_file,
-            path_to_save_variables=param_file)
+# values, labels, valid_values, valid_labels = model.train2(train_x=samps, valid_x=[],
+#             epochs=epochs, batch_size=n_batch,
+#             display_step=display_step,
+#             path_to_load_variables='',
+#             # path_to_load_variables=param_file,
+#             path_to_save_variables=param_file)
 
 
 
@@ -144,8 +144,8 @@ test_results, train_results, test_labels, train_labels = model.eval(data=test_sa
 model.init_params(param_file)
 print 'Decoder entropy', model.decoder_entropy()
 
-fasdfa
 
+fadfas
 
 fig1 = 1
 fig2 = 1
